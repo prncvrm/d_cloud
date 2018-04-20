@@ -214,31 +214,6 @@ exports.update_ip_active_nodes=function(old_ip,new_ip,callback){
 }
 
 //uploads the chunks on online active nodes
-/*exports.upload_chunks=function(_chunk){
-	_chunk.forEach(function(chunk){
-		active_friends.find().toArray(function(err,data){
-			data.forEach(function(path,_index){
-				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
-				var socket = io.connect('http://'+path.ip+':3001');
-				socket.on("connect", function(){
-					console.log("sockets connected");
-					delivery = dl.listen(socket);
-					delivery.connect();
-					delivery.on('delivery.connect',function(delivery){
-						delivery.send({
-							name:'part',
-							path:chunk
-						});
-						delivery.on('send.success',function(file){
-							console.log("File Uploaded");
-						});
-					});
-				});
-			});
-		});	
-	});
-}*/
-
 exports.upload_chunks=function(_chunk){
 	_chunk.forEach(function(chunk){
 		active_friends.find().toArray(function(err,data){
@@ -246,24 +221,9 @@ exports.upload_chunks=function(_chunk){
 				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
 				var socket = io.connect('http://'+path.ip+':3001');
 				var stream=ss.createStream();
-				var filename="part";
+				var filename=chunk.split("/")[chunk.split("/").length-1];
 				ss(socket).emit('chunk',stream,{name:filename});
 				fs.createReadStream(chunk).pipe(stream);
-				/*socket.on("connect", function(){
-					console.log("sockets connected");
-					delivery = dl.listen(socket);
-					delivery.connect();
-					delivery.on('delivery.connect',function(delivery){
-						delivery.send({
-							name:'part',
-							path:chunk
-						});
-						delivery.on('send.success',function(file){
-							console.log("File Uploaded");
-						});
-					});
-				});*/
-//				request("http://"+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(chunk));
 			});
 		});	
 	});
