@@ -4,7 +4,8 @@ var _path=require('path');
 var http = require('http');
 var async = require('async');
 var request=require('request');
-var io  = require('socket.io').listen(3001),
+var io=require('socket.io-client');
+var ss=require('socket.io-stream');
 var result=[];
 var dl=require('delivery');
 mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
@@ -213,12 +214,12 @@ exports.update_ip_active_nodes=function(old_ip,new_ip,callback){
 }
 
 //uploads the chunks on online active nodes
-exports.upload_chunks=function(_chunk){
+/*exports.upload_chunks=function(_chunk){
 	_chunk.forEach(function(chunk){
 		active_friends.find().toArray(function(err,data){
 			data.forEach(function(path,_index){
 				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
-				var socket = io.connect('http://"+path.ip+":3001');
+				var socket = io.connect('http://'+path.ip+':3001');
 				socket.on("connect", function(){
 					console.log("sockets connected");
 					delivery = dl.listen(socket);
@@ -233,6 +234,35 @@ exports.upload_chunks=function(_chunk){
 						});
 					});
 				});
+			});
+		});	
+	});
+}*/
+
+exports.upload_chunks=function(_chunk){
+	_chunk.forEach(function(chunk){
+		active_friends.find().toArray(function(err,data){
+			data.forEach(function(path,_index){
+				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
+				var socket = io.connect('http://'+path.ip+':3001');
+				var stream=ss.createStream();
+				var filename="part";
+				ss(socket).emit('chunk',stream,{name:filename});
+				fs.createReadStream(chunk).pipe(stream);
+				/*socket.on("connect", function(){
+					console.log("sockets connected");
+					delivery = dl.listen(socket);
+					delivery.connect();
+					delivery.on('delivery.connect',function(delivery){
+						delivery.send({
+							name:'part',
+							path:chunk
+						});
+						delivery.on('send.success',function(file){
+							console.log("File Uploaded");
+						});
+					});
+				});*/
 //				request("http://"+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(chunk));
 			});
 		});	

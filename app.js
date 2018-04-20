@@ -11,8 +11,10 @@ var _my_ip = require('my-local-ip');
 var body_parser = require('body-parser');
 var formidable = require('formidable');
 const splitFile = require('split-file');
-var io=require('socket.io').listen(3001);
+var io = require('socket.io').listen(80);
+var ss = require('socket.io-stream');
 var dl=require('delivery');
+var path=require('path');
 var urlencodedParser= body_parser.urlencoded({extended:false});
 var db, friends,active_friends,setup,_my_name;
 var func=require('./functions.js');
@@ -28,18 +30,11 @@ mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
 });
 
 io.sockets.on('connection', function(socket){
-  
-  var delivery = dl.listen(socket);
-  delivery.on('receive.success',function(file){
-        
-    fs.writeFile(file.name, file.buffer, function(err){
-      if(err){
-        console.log('File could not be saved: ' + err);
-      }else{
-        console.log('File ' + file.name + " saved");
-      };
-    });
-  });	
+	ss(socket).on('chunk',function(stream,data){
+		var filename=path.basename(data.name);
+		stream.pipe(fs.createWriteStream(filename));
+		console.log("chunk saved");
+	});
 });
 
 var app=express();
