@@ -194,12 +194,12 @@ app.get('/upload_file',function(req,res){
 	res.render('upload',{toast : "Select file to upload on nodes"});
 });
 app.get('/upload_chunk',function(req,res){
-	console.log("was here");
-	console.log(req);
 	/*res.setHeader('Content-disposition', 'attachment; filename=' + req.params.name);
 	var fileStream = fs.createReadStream(__dirname);*/
 	var form = new formidable.IncomingForm();
 	form.parse(req, function (err, fields, files) {
+		console.log(files);
+		console.log(fields);
 		// oldpath : temporary folder to which file is saved to
 		var oldpath = files.filetoupload.path;
 		var newpath = upload_path + files.filetoupload.name;
