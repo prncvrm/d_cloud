@@ -19,7 +19,8 @@
     "mongojs": "*",
     "asyn":"*",
     "ejs":"*",
-    "request":"*"
+    "request":"*",
+    "split-file":"*"
   },
   "devDependencies": {},
   "scripts": {

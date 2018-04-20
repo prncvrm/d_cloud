@@ -97,9 +97,7 @@ app.get('/api/stats',function(req,res){
 		
 		});
 	}
-
 	});
-
 });
 
 app.get('/friend_list',function(req,res){
@@ -189,6 +187,9 @@ app.post('/add_friend',urlencodedParser,function(req,res){
 	func.add_friend(ip,name,1);
 	res.render('add_friend',{toast:"New Ip Added"});
 	
+});
+app.get('/upload_file',function(req,res){
+	res.render('upload',{toast : "Select file to upload on nodes"});
 });
 
 app.get('/add_friend',function(req,res){
