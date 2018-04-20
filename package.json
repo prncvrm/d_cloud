@@ -21,7 +21,7 @@
     "ejs":"*",
     "request":"*",
     "split-file":"*",
-    "formidable":"*",
+    "formidable":"*"
   },
   "devDependencies": {},
   "scripts": {
