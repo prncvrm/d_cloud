@@ -20,7 +20,8 @@
     "asyn":"*",
     "ejs":"*",
     "request":"*",
-    "split-file":"*"
+    "split-file":"*",
+    "formidable":"*",
   },
   "devDependencies": {},
   "scripts": {

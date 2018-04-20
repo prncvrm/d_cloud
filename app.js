@@ -9,6 +9,8 @@ var mongoClient =require('mongodb').MongoClient;
 var schedule=require('node-schedule');
 var _my_ip = require('my-local-ip');
 var body_parser = require('body-parser');
+var formidable = require('formidable');
+const splitFile = require('split-file');
 var urlencodedParser= body_parser.urlencoded({extended:false});
 var db, friends,active_friends,setup,_my_name;
 var func=require('./functions.js');
@@ -20,14 +22,14 @@ mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
 	setup=database.collection('setup');
 	friends = database.collection('friends');
 	active_friends = database.collection('active_friends');
-	
+	uploads=database.collection('uploads');
 });
-
 
 var app=express();
 app.set('view engine','ejs');
 app.use('/assets',express.static('assets'));
 http.createServer(app).listen(3000);
+
 //if its the first time/everytime lol59
 app.get("*",function(req,res,next){
 	setup.find().toArray(function(err,data){
@@ -44,7 +46,6 @@ app.get("*",function(req,res,next){
 					res.render('setup',{toast:"Restart the Application"});
 				}
 				else{
-					//next();
 					res.render('setup',{toast:":No Active Nodes at the moment, try again after sometime"});
 				}
 			});
@@ -56,8 +57,6 @@ app.get("*",function(req,res,next){
 	});
 
 });
-
-
 
 //nav bar
 app.get('/api/stats',function(req,res){
@@ -110,10 +109,12 @@ app.get('/friend_list',function(req,res){
 		});
 	});
 });
+
 app.get('/video/:path/:name/:ip',function(req,res){
 	_data=[req.params.ip,req.params.path,req.params.name];
 	res.render('video',{data:_data});
 });
+
 //video stream
 app.get('/video_stream/:path/:name',function(req,res){
 	//params as file name to be saved as
@@ -147,6 +148,7 @@ app.get('/video_stream/:path/:name',function(req,res){
     	fs.createReadStream(path).pipe(res);
   	}
 });
+
 app.get('/add_mutal_friend',function(req,res){
 	func.add_mutal_friend();
 	res.writeHead(200,{'Context-Type':'text/plain'});
@@ -175,7 +177,6 @@ app.get('/add_found_friends',function(req,res){
 		collection.find().toArray(function(err,data){
 			if(err)
 				return console.log(err);
-			//console.log(data[ip]);
 		});
 	});
 });
@@ -188,15 +189,44 @@ app.post('/add_friend',urlencodedParser,function(req,res){
 	res.render('add_friend',{toast:"New Ip Added"});
 	
 });
+
 app.get('/upload_file',function(req,res){
 	res.render('upload',{toast : "Select file to upload on nodes"});
 });
 
-app.get('/add_friend',function(req,res){
-	res.render('add_friend');
 
+app.post('/upload',urlencodedParser,function(req,res){
+	var form = new formidable.IncomingForm();
+    active_friends.find().toArray(function(err,_data){
+    	if(_data.length==0){
+    		res.render('upload',{toast:"No Active Nodes"});
+    	}
+    	else{
+    			form.parse(req, function (err, fields, files) {
+		    	var oldpath = files.filetoupload.path;
+		      	var newpath = __dirname + files.filetoupload.name;
+		      	fs.rename(oldpath, newpath, function (err) {
+		        	if (err) throw err;
+		        	splitFile.splitFile(newpath,_data.length)
+		  			.then((names) => {
+		  				func.upload_chunks(names);
+		  				console.log("done");
+		  			})
+		  			.catch((err) => {
+		    			console.log('Error: ', err);
+		  			});
+		        	res.write('File uploaded and splitted!');
+		        	res.end();
+		    	});
+		    });
+    	}	
+    });
+ 
 });
 
+app.get('/add_friend',function(req,res){
+	res.render('add_friend');
+});
 //store this ping detail in pings database for mongo. to get the last ping data
 app.get('/receive_pings',function(req,res){
 	var name = req.query.name;
@@ -221,18 +251,13 @@ app.get('/download/:path/:name',function(req,res){
 });
 app.get('/search',function(req,res){
 	res.render('search');
-	
 });
-
 app.get('/my_friends',function(req,res){
 	friends.find().toArray(function(err,_data){
 		console.log(JSON.stringify(_data));
 		res.render('my_friends',{data:(_data)});
 	});
-	
-	
 });
-
 app.post('/search',urlencodedParser,function(req,res){
 	func.search_all(req.body.query,function(result,err){
 
@@ -252,13 +277,13 @@ app.post('/search',urlencodedParser,function(req,res){
 
 app.get('/setup',function(req,res){
 	res.render('setup');
-
 });
+
 app.post('/setup',urlencodedParser,function(req,res){
-	//console.log(req.body);
 	setup.updateOne({'name':req.body.name},{'name':req.body.name,'my_ip':_my_ip(),'path':req.body.path},{upsert:true});
 	res.render('setup',{toast:"Restart the Application"});
 });
+
 app.get('/test',function(req,res){
 	console.log(fs.existsSync("/home/prince/Download"));
 	res.writeHead(200,{'Context-Type':'text/plain'});
@@ -268,6 +293,7 @@ app.get('/test',function(req,res){
 app.get('/',function(req,res){
 	res.render('search');
 });	
+
 app.get('/*',function(req,res){
 	res.writeHead(200,{'Context-Type':'text/plain'});
 	res.end("Wrong Page :-)");
@@ -275,6 +301,7 @@ app.get('/*',function(req,res){
 
 console.log("server running at port 3000");
 console.log(_my_ip());
+
 mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,db){
 	db.collection('setup').find().toArray(function(err,_data){
 		if(_data[0]){
@@ -316,6 +343,7 @@ var am_active = schedule.scheduleJob('*/5 * * * * *', function(){
 		
 	});
 });
+
 //adding mutual friends after every 30 secs
 var mutual_friend=schedule.scheduleJob('*/30 * * * * *',function(){
 	func.add_mutal_friend();

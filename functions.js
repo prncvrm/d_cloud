@@ -18,7 +18,6 @@ mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
 var time_gap = 20000;
 
 //lame function lol
-
 exports.download_chunks=function (path,file_name){
 	//$path denotes the path from where the file is to be downlaoded and $file_name the file to which the downloaded is to be saved
 	var request=http.get("http://localhost:3000/file.deb",function(response){
@@ -209,4 +208,15 @@ exports.update_ip_active_nodes=function(old_ip,new_ip,callback){
 				
 		});
 	});
+}
+
+//uploads the chunks on online active nodes
+exports.upload_chunks=function(_chunk){
+	_chunk.forEach(chunk){
+		active_friends.find().toArray(function(err,data){
+			data.forEach(function(path,_index){
+				request('//'+path.ip+":3000/upload_file").pipe(fs.createWriteStream(__dirname+"/"+chunk));
+			});
+		});	
+	}
 }

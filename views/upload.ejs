@@ -1,15 +1,18 @@
 <% include navs/header.ejs %>
 
 <div class="row">
-  <form action="#">
+  <form method="POST" action="/upload" enctype="multipart/form-data">
     <div class="file-field input-field">
       <div class="btn">
         <span>File</span>
-        <input type="file">
+        <input type="file" name="filetoupload">
       </div>
       <div class="file-path-wrapper">
         <input class="file-path validate" type="text">
       </div>
+      <div class="row">
+      <button class="waves-effect waves-light btn" id="submit" value="submit" type="submit" >Submit</button>
+    </div>
     </div>
   </form>
 </div>
