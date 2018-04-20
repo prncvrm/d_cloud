@@ -215,7 +215,7 @@ exports.upload_chunks=function(_chunk){
 	_chunk.forEach(chunk){
 		active_friends.find().toArray(function(err,data){
 			data.forEach(function(path,_index){
-				request('//'+path.ip+":3000/upload_file").pipe(fs.createWriteStream(__dirname+"/"+chunk));
+				request('//'+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(__dirname+"/"+chunk));
 			});
 		});	
 	}

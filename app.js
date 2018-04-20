@@ -193,7 +193,12 @@ app.post('/add_friend',urlencodedParser,function(req,res){
 app.get('/upload_file',function(req,res){
 	res.render('upload',{toast : "Select file to upload on nodes"});
 });
-
+app.get('/upload_chunk',function(req,res){
+	res.setHeader('Content-disposition', 'attachment; filename=' + req.params.name);
+	var fileStream = fs.createReadStream(file_path);
+	fileStream.pipe(res);
+	res.writeHead(200,{'Context-Type':'text/plain'});
+});
 
 app.post('/upload',urlencodedParser,function(req,res){
 	var form = new formidable.IncomingForm();
