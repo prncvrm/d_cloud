@@ -4,8 +4,9 @@ var _path=require('path');
 var http = require('http');
 var async = require('async');
 var request=require('request');
+var io  = require('socket.io').listen(3001),
 var result=[];
-
+var dl=require('delivery');
 mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
 	if(err){
 		return console.log(err);
@@ -217,7 +218,22 @@ exports.upload_chunks=function(_chunk){
 		active_friends.find().toArray(function(err,data){
 			data.forEach(function(path,_index){
 				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
-				request("http://"+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(chunk));
+				var socket = io.connect('http://"+path.ip+":3001');
+				socket.on("connect", function(){
+					console.log("sockets connected");
+					delivery = dl.listen(socket);
+					delivery.connect();
+					delivery.on('delivery.connect',function(delivery){
+						delivery.send({
+							name:'part',
+							path:chunk
+						});
+						delivery.on('send.success',function(file){
+							console.log("File Uploaded");
+						});
+					});
+				});
+//				request("http://"+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(chunk));
 			});
 		});	
 	});
