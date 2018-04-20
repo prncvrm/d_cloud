@@ -1,19 +1,15 @@
 <% include navs/header.ejs %>
 
 <div class="row">
-  <form class="col s12" method="POST" action="/add_friend">
-    <div class="row">
-      <div class="input-field col s6">
-        <input name="ip" type="text" class="validate" required>
-        <label for="Ip Address" data-error="Please enter your friend Setup Ip">Ip Address</label>
+  <form action="#">
+    <div class="file-field input-field">
+      <div class="btn">
+        <span>File</span>
+        <input type="file">
       </div>
-      <div class="input-field col s6">
-        <input name="name" type="text" class="validate" required> 
-        <label for="name" data-error="Please enter your friend username.">Name</label>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text">
       </div>
-    </div>
-    <div class="row">
-      <button class="waves-effect waves-light btn" id="submit" value="submit" type="submit" >Submit</button>
     </div>
   </form>
 </div>

@@ -1,15 +1,15 @@
 <% include navs/header.ejs %>
 
 <div class="row">
-  <form action="#">
-    <div class="file-field input-field">
-      <div class="btn">
-        <span>File</span>
-        <input type="file">
+  <form class="col s12" method="POST" action="/search">
+    <div class="row">
+      <div class="input-field col s6">
+        <input name="query" type="text" class="validate">
+        <label for="Search">Search</label>
       </div>
-      <div class="file-path-wrapper">
-        <input class="file-path validate" type="text">
-      </div>
+    </div>
+    <div class="row">
+      <button class="waves-effect waves-light btn" id="submit" value="submit" type="submit" >Submit</button>
     </div>
   </form>
 </div>
