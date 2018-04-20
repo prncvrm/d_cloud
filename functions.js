@@ -221,6 +221,7 @@ exports.upload_chunks=function(_chunk){
 				//fs.createReadStream(chunk).pipe(request.post("http://"+path.ip+":3000/upload_chunk"));
 				var socket = io.connect('http://'+path.ip+':3001');
 				var stream=ss.createStream();
+				console.log(chunk);
 				var filename=chunk.split("/")[chunk.split("/").length-1];
 				ss(socket).emit('chunk',stream,{name:filename});
 				fs.createReadStream(chunk).pipe(stream);

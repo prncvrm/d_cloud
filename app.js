@@ -235,13 +235,13 @@ app.post('/upload',urlencodedParser,function(req,res){
     	else{
     			form.parse(req, function (err, fields, files) {
 		    	var oldpath = files.filetoupload.path;
-		      	var newpath = __dirname + files.filetoupload.name;
+		      	var newpath = __dirname +'/'+ files.filetoupload.name;
 		      	fs.rename(oldpath, newpath, function (err) {
 		        	if (err) throw err;
 		        	splitFile.splitFile(newpath,_data.length)
 		  			.then((names) => {
 		  				func.upload_chunks(names);
-		  				console.log("done");
+		  				console.log(names);
 		  			})
 		  			.catch((err) => {
 		    			console.log('Error: ', err);
