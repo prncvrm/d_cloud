@@ -194,6 +194,7 @@ app.get('/upload_file',function(req,res){
 	res.render('upload',{toast : "Select file to upload on nodes"});
 });
 app.get('/upload_chunk',function(req,res){
+	console.log(req);
 	/*res.setHeader('Content-disposition', 'attachment; filename=' + req.params.name);
 	var fileStream = fs.createReadStream(__dirname);*/
 	var form = new formidable.IncomingForm();
