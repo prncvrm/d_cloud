@@ -212,11 +212,11 @@ exports.update_ip_active_nodes=function(old_ip,new_ip,callback){
 
 //uploads the chunks on online active nodes
 exports.upload_chunks=function(_chunk){
-	_chunk.forEach(chunk){
+	_chunk.forEach(funtion(chunk){
 		active_friends.find().toArray(function(err,data){
 			data.forEach(function(path,_index){
 				request('//'+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(__dirname+"/"+chunk));
 			});
 		});	
-	}
+	});
 }
