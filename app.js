@@ -195,7 +195,7 @@ app.get('/upload_file',function(req,res){
 });
 app.get('/upload_chunk',function(req,res){
 	res.setHeader('Content-disposition', 'attachment; filename=' + req.params.name);
-	var fileStream = fs.createReadStream(file_path);
+	var fileStream = fs.createReadStream(__dirname);
 	fileStream.pipe(res);
 	res.writeHead(200,{'Context-Type':'text/plain'});
 });

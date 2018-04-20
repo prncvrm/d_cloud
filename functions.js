@@ -3,6 +3,7 @@ var fs = require('fs');
 var _path=require('path');
 var http = require('http');
 var async = require('async');
+var request=require('request');
 var result=[];
 
 mongoClient.connect("mongodb://localhost:27017/MyDb", function(err,database){
@@ -215,7 +216,7 @@ exports.upload_chunks=function(_chunk){
 	_chunk.forEach(function(chunk){
 		active_friends.find().toArray(function(err,data){
 			data.forEach(function(path,_index){
-				request('//'+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(__dirname+"/"+chunk));
+				request("http://"+path.ip+":3000/upload_chunk").pipe(fs.createWriteStream(chunk));
 			});
 		});	
 	});
